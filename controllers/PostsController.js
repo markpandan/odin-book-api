@@ -15,7 +15,7 @@ exports.postGetComments = async (req, res, next) => {
   const { postId } = req.params;
 
   try {
-    const comments = await db.postGetComments(postId);
+    const comments = await db.getPostComments(postId);
 
     res.json({ output: comments });
   } catch (error) {
@@ -28,7 +28,7 @@ exports.postCreate = async (req, res, next) => {
   const { description } = req.body;
 
   try {
-    const post = db.createPost(userId, description);
+    const post = await db.createPost(userId, description);
 
     res.json({ message: "Post Created", output: post });
   } catch (error) {

@@ -16,7 +16,7 @@ exports.getPostComments = async (postId) => {
       id: postId,
     },
     select: {
-      Comments,
+      Comments: true,
     },
   });
 };

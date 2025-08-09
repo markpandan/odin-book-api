@@ -6,6 +6,8 @@ const app = express();
 
 app.use(cors());
 
+require("./config/passport");
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
