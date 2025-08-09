@@ -1,24 +1,28 @@
 const issueToken = require("../lib/jwtUtils");
 const db = require("../prisma/userQueries");
-const verifyLogin = require("../lib/verifyLogin");
+const verifyLogin = require("../lib/authUtils");
 const { validateCredentials } = require("../validators/UserValidators");
 const { validationResult } = require("express-validator");
 
-exports.userLogin = async (req, res) => {
+exports.userLogin = async (req, res, next) => {
   const { username, password } = req.body;
   const verify = await verifyLogin(username, password);
 
-  if (verify.success) {
-    const token = issueToken(verify.output);
-    res.json({ output: { token } });
-  } else {
-    res.status(401).json({ message: verify.message });
+  try {
+    if (verify.success) {
+      const token = issueToken(verify.output);
+      res.json({ output: { token } });
+    } else {
+      res.status(401).json({ message: verify.message });
+    }
+  } catch (error) {
+    next(error);
   }
 };
 
 exports.userSignup = [
   validateCredentials,
-  async (req, res) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res
@@ -42,3 +46,15 @@ exports.userSignup = [
     }
   },
 ];
+
+exports.userGetPosts = async (req, res, next) => {
+  const { id: userId } = req.user;
+
+  try {
+    const userPosts = await db.userGetPosts(userId);
+
+    res.json({ output: userPosts });
+  } catch (error) {
+    next(error);
+  }
+};
