@@ -1,7 +1,7 @@
 const { body } = require("express-validator");
 const db = require("../prisma/userQueries");
 
-export const validateCredentials = [
+exports.validateCredentials = [
   body("username")
     .trim()
     .custom(async (value) => {
