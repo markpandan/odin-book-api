@@ -1,11 +1,12 @@
 const issueToken = require("../lib/jwtUtils");
 const db = require("../prisma/userQueries");
-const verifyLogin = require("../lib/authUtils");
+const { verifyLogin } = require("../lib/authUtils");
 const { validateCredentials } = require("../validators/UserValidators");
 const { validationResult } = require("express-validator");
 
 exports.userLogin = async (req, res, next) => {
   const { username, password } = req.body;
+
   const verify = await verifyLogin(username, password);
 
   try {
