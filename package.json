@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "npx prisma migrate dev --name init",
+    "build": "npx prisma migrate dev --name init && node prisma/seeds.js",
     "server": "node --watch app.js",
     "test": "jest"
   },

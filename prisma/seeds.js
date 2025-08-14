@@ -10,7 +10,7 @@ const randomize = (array) => {
 
 const createNewUsers = async (n) => {
   const randomFirstName = faker.helpers.uniqueArray(faker.person.firstName, n);
-  const randomLastName = faker.helpers.uniqueArray(faker.person.firstName, n);
+  const randomLastName = faker.helpers.uniqueArray(faker.person.lastName, n);
   const randomPassword = await Promise.all(
     faker.helpers
       .uniqueArray(faker.internet.password, n)
