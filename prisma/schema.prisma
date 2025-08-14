@@ -39,7 +39,7 @@ model Posts {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user   Users  @relation(fields: [userId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
   Images   Images[]
@@ -66,10 +66,10 @@ model Comments {
   id      String @id @default(uuid())
   content String
 
-  user   Users  @relation(fields: [userId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  post   Posts  @relation(fields: [postId], references: [id])
+  post   Posts  @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
 
   createdAt DateTime @default(now())
@@ -79,10 +79,10 @@ model Comments {
 model Likes {
   id String @id @default(uuid())
 
-  user   Users  @relation(fields: [userId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  post   Posts  @relation(fields: [postId], references: [id])
+  post   Posts  @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
 
   createdAt DateTime @default(now())
