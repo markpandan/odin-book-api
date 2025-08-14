@@ -8,9 +8,7 @@ const randomize = (array) => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-const createNewUsers = async () => {
-  const n = 10;
-
+const createNewUsers = async (n) => {
   const randomFirstName = faker.helpers.uniqueArray(faker.person.firstName, n);
   const randomLastName = faker.helpers.uniqueArray(faker.person.firstName, n);
   const randomPassword = await Promise.all(
@@ -36,9 +34,7 @@ const createNewUsers = async () => {
   return await prisma.users.createMany({ data: userEntries });
 };
 
-const createNewPosts = async () => {
-  const n = 5;
-
+const createNewPosts = async (n) => {
   const userIds = (await prisma.users.findMany({ select: { id: true } })).map(
     (value) => value.id
   );
@@ -51,8 +47,7 @@ const createNewPosts = async () => {
   return await prisma.posts.createMany({ data: postEntries });
 };
 
-const createNewComments = async () => {
-  const n = 20;
+const createNewComments = async (n) => {
   const userIds = (await prisma.users.findMany({ select: { id: true } })).map(
     (value) => value.id
   );
@@ -69,9 +64,7 @@ const createNewComments = async () => {
   return await prisma.comments.createMany({ data: commentEntries });
 };
 
-const createNewLikes = async () => {
-  const n = 40;
-
+const createNewLikes = async (n) => {
   const userIds = (await prisma.users.findMany({ select: { id: true } })).map(
     (value) => value.id
   );
@@ -89,10 +82,12 @@ const createNewLikes = async () => {
 
 const populateDb = async () => {
   try {
-    await createNewUsers();
-    await createNewPosts();
-    await createNewComments();
-    await createNewLikes();
+    await createNewUsers(10);
+    await createNewPosts(5);
+    await createNewComments(20);
+    await createNewLikes(40);
+
+    console.log("Database has been populated");
   } catch (error) {
     if (
       error.name == "PrismaClientKnownRequestError" &&
