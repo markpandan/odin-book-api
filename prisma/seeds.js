@@ -93,7 +93,7 @@ const populateDb = async () => {
       error.name == "PrismaClientKnownRequestError" &&
       error.code == "P2002"
     ) {
-      console.log("Database has already been populated");
+      console.log("Database has already been populated. Seeding cancelled.");
     } else {
       console.error(error);
     }

@@ -7,18 +7,44 @@ exports.getSomePosts = async (start, length) => {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      user: {
+        include: {
+          password: false,
+          email: false,
+          createdAt: false,
+          updatedAt: false,
+        },
+      },
+      _count: {
+        select: { Comments: true, Likes: true },
+      },
+    },
   });
 };
 
 exports.getPostComments = async (postId) => {
-  return await prisma.posts.findMany({
+  const query = await prisma.posts.findMany({
     where: {
       id: postId,
     },
     select: {
-      Comments: true,
+      Comments: {
+        include: {
+          user: {
+            include: {
+              password: false,
+              email: false,
+              createdAt: false,
+              updatedAt: false,
+            },
+          },
+        },
+      },
     },
   });
+
+  return query[0].Comments;
 };
 
 exports.createPost = async (userId, description) => {

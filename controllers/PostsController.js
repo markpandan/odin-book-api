@@ -3,7 +3,7 @@ const db = require("../prisma/postQueries");
 exports.postGet = async (req, res, next) => {
   const { start = 0, length = 5 } = req.query;
   try {
-    const posts = await db.getSomePosts(start, length);
+    const posts = await db.getSomePosts(Number(start), Number(length));
 
     res.json({ output: posts });
   } catch (error) {
