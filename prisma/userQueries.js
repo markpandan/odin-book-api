@@ -5,7 +5,7 @@ exports.createNewUser = async (usersFields) => {
   const { username, firstname, lastname, email, password } = usersFields;
   const hashedPassword = await util.encryptPassword(password);
 
-  await prisma.users.create({
+  return await prisma.users.create({
     data: {
       username,
       firstname,
@@ -42,4 +42,27 @@ exports.getUserByEmail = async (email) => {
   });
 
   return user;
+};
+
+exports.updateCurrentUser = async (usersFields) => {
+  const { id, username, firstname, lastname, email } = usersFields;
+
+  return await prisma.users.update({
+    where: {
+      id,
+    },
+    data: {
+      username,
+      firstname,
+      lastname,
+      email,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      firstname: true,
+      lastname: true,
+    },
+  });
 };

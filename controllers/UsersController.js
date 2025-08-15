@@ -1,7 +1,10 @@
 const issueToken = require("../lib/jwtUtils");
 const db = require("../prisma/userQueries");
 const { verifyLogin } = require("../lib/authUtils");
-const { validateCredentials } = require("../validators/UserValidators");
+const {
+  validateCredentials,
+  validateUpdatedCredentials,
+} = require("../validators/UserValidators");
 const { validationResult } = require("express-validator");
 
 exports.userLogin = async (req, res, next) => {
@@ -24,11 +27,9 @@ exports.userLogin = async (req, res, next) => {
 exports.userSignup = [
   validateCredentials,
   async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res
-        .status(400)
-        .json({ message: "Username or email already exists" });
+    const errorResult = validationResult(req);
+    if (!errorResult.isEmpty()) {
+      return res.status(400).json({ message: errorResult.errors[0].msg });
     }
 
     const { username, password, firstname, lastname, email } = req.body;
@@ -42,6 +43,33 @@ exports.userSignup = [
         email,
       });
       res.json({ message: "User account created" });
+    } catch (error) {
+      next(error);
+    }
+  },
+];
+
+exports.userUpdate = [
+  validateUpdatedCredentials,
+  async (req, res) => {
+    const errorResult = validationResult(req);
+    if (!errorResult.isEmpty()) {
+      return res.status(400).json({ message: errorResult.errors[0].msg });
+    }
+
+    const { id: userId } = req.user;
+    const { username, firstname, lastname, email } = req.body;
+
+    try {
+      const updatedUser = await db.updateCurrentUser({
+        id: userId,
+        username,
+        firstname,
+        lastname,
+        email,
+      });
+      const token = issueToken(updatedUser);
+      res.json({ message: "User account updated", output: { token } });
     } catch (error) {
       next(error);
     }
