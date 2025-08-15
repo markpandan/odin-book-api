@@ -10,6 +10,8 @@ router.post("/signup", controller.userSignup);
 
 router.put("/update", isAuth, controller.userUpdate);
 
-router.get("/posts", isAuth, controller.userGetPosts);
+router.get("/:username/posts", controller.userGetPosts);
+
+// router.get("/posts", isAuth, controller.userGetPosts);
 
 module.exports = router;

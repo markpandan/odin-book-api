@@ -17,7 +17,7 @@ exports.getSomePosts = async (start, length) => {
         },
       },
       _count: {
-        select: { Comments: true, Likes: true },
+        select: { comments: true, likes: true },
       },
     },
   });
@@ -29,7 +29,7 @@ exports.getPostComments = async (postId) => {
       id: postId,
     },
     select: {
-      Comments: {
+      comments: {
         include: {
           user: {
             include: {
@@ -44,12 +44,12 @@ exports.getPostComments = async (postId) => {
     },
   });
 
-  return query[0].Comments;
+  return query[0].comments;
 };
 
-exports.createPost = async (userId, description) => {
+exports.createPost = async (userId, content) => {
   return prisma.posts.create({
-    data: { description, userId },
+    data: { content, userId },
   });
 };
 

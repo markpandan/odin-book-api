@@ -24,17 +24,17 @@ model Users {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Posts    Posts[]
-  Comments Comments[]
-  Likes    Likes[]
+  posts    Posts[]
+  comments Comments[]
+  likes    Likes[]
 
   followedBy Users[] @relation("UserFollows")
   following  Users[] @relation("UserFollows")
 }
 
 model Posts {
-  id          String @id @default(uuid())
-  description String
+  id      String @id @default(uuid())
+  content String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -42,9 +42,9 @@ model Posts {
   user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
-  Images   Images[]
-  Comments Comments[]
-  Likes    Likes[]
+  images   Images[]
+  comments Comments[]
+  likes    Likes[]
 }
 
 model Images {

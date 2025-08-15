@@ -66,3 +66,28 @@ exports.updateCurrentUser = async (usersFields) => {
     },
   });
 };
+
+exports.getUserPosts = async (username, start, length) => {
+  const user = await prisma.users.findMany({
+    where: {
+      username,
+    },
+    include: {
+      posts: {
+        skip: start,
+        take: length,
+        include: {
+          _count: {
+            select: { comments: true, likes: true },
+          },
+        },
+      },
+      password: false,
+      email: false,
+      createdAt: false,
+      updatedAt: false,
+    },
+  });
+
+  return user[0];
+};

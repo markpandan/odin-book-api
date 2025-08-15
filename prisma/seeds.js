@@ -40,7 +40,7 @@ const createNewPosts = async (n) => {
   );
 
   const postEntries = new Array(n).fill().map(() => ({
-    description: faker.lorem.paragraphs({ min: 1, max: 2 }),
+    content: faker.lorem.paragraphs({ min: 1, max: 2 }),
     userId: randomize(userIds),
   }));
 
@@ -83,9 +83,9 @@ const createNewLikes = async (n) => {
 const populateDb = async () => {
   try {
     await createNewUsers(10);
-    await createNewPosts(5);
-    await createNewComments(20);
-    await createNewLikes(40);
+    await createNewPosts(20);
+    await createNewComments(40);
+    await createNewLikes(80);
 
     console.log("Database has been populated");
   } catch (error) {

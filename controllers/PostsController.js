@@ -25,10 +25,10 @@ exports.postGetComments = async (req, res, next) => {
 
 exports.postCreate = async (req, res, next) => {
   const { id: userId } = req.user;
-  const { description } = req.body;
+  const { content } = req.body;
 
   try {
-    const post = await db.createPost(userId, description);
+    const post = await db.createPost(userId, content);
 
     res.json({ message: "Post Created", output: post });
   } catch (error) {

@@ -77,10 +77,11 @@ exports.userUpdate = [
 ];
 
 exports.userGetPosts = async (req, res, next) => {
-  const { id: userId } = req.user;
+  const { start = 0, length = 5 } = req.query;
+  const { username } = req.params;
 
   try {
-    const userPosts = await db.userGetPosts(userId);
+    const userPosts = await db.getUserPosts(username, start, length);
 
     res.json({ output: userPosts });
   } catch (error) {
