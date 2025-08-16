@@ -28,8 +28,20 @@ model Users {
   comments Comments[]
   likes    Likes[]
 
-  followedBy Users[] @relation("UserFollows")
-  following  Users[] @relation("UserFollows")
+  following Follows[] @relation("followedBy")
+  followers Follows[] @relation("following")
+}
+
+model Follows {
+  followedBy   Users  @relation("followedBy", fields: [followedById], references: [id], onDelete: Cascade)
+  followedById String
+  following    Users  @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  followingId  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([followingId, followedById])
 }
 
 model Posts {
@@ -77,8 +89,6 @@ model Comments {
 }
 
 model Likes {
-  id String @id @default(uuid())
-
   user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
@@ -87,4 +97,6 @@ model Likes {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@id([userId, postId])
 }

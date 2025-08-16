@@ -1,9 +1,14 @@
 const db = require("../prisma/postQueries");
 
 exports.postGet = async (req, res, next) => {
-  const { start = 0, length = 5 } = req.query;
+  const { start = 0, length = 5, relationTo = "" } = req.query;
+
   try {
-    const posts = await db.getSomePosts(Number(start), Number(length));
+    const posts = await db.getSomePosts(
+      Number(start),
+      Number(length),
+      relationTo
+    );
 
     res.json({ output: posts });
   } catch (error) {
@@ -58,6 +63,22 @@ exports.postLike = async (req, res, next) => {
     const like = await db.createPostLike(userId, postId);
 
     res.json({ message: `Like Created on Post ${postId}`, output: like });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.postRemoveLike = async (req, res, next) => {
+  const { id: userId } = req.user;
+  const { postId } = req.params;
+
+  try {
+    const removedLike = await db.deletePostLike(userId, postId);
+
+    res.json({
+      message: `Like Deleted on Post ${postId} from ${userId}`,
+      output: removedLike,
+    });
   } catch (error) {
     next(error);
   }

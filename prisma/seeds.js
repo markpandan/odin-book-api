@@ -34,6 +34,38 @@ const createNewUsers = async (n) => {
   return await prisma.users.createMany({ data: userEntries });
 };
 
+const createNewFollowers = async (p) => {
+  const userIds = (await prisma.users.findMany({ select: { id: true } })).map(
+    (value) => value.id
+  );
+
+  let entries = [];
+  const iterationPerUser = Math.round(userIds.length * p);
+  for (const currentId of userIds) {
+    let followingIds = new Set();
+
+    for (let i = 0; i < iterationPerUser; i++) {
+      const userId = randomize(userIds);
+      if (currentId != userId) {
+        followingIds.add(userId);
+      }
+    }
+
+    followingIds = Array.from(followingIds);
+    entries = [
+      ...entries,
+      ...followingIds.map((followingId) => ({
+        followedById: currentId,
+        followingId,
+      })),
+    ];
+  }
+
+  await prisma.follows.createMany({
+    data: entries,
+  });
+};
+
 const createNewPosts = async (n) => {
   const userIds = (await prisma.users.findMany({ select: { id: true } })).map(
     (value) => value.id
@@ -64,30 +96,49 @@ const createNewComments = async (n) => {
   return await prisma.comments.createMany({ data: commentEntries });
 };
 
-const createNewLikes = async (n) => {
+const createNewLikes = async (p) => {
   const userIds = (await prisma.users.findMany({ select: { id: true } })).map(
     (value) => value.id
   );
+
   const postIds = (await prisma.posts.findMany({ select: { id: true } })).map(
     (value) => value.id
   );
 
-  const likeEntries = new Array(n).fill().map(() => ({
-    userId: randomize(userIds),
-    postId: randomize(postIds),
-  }));
+  let entries = [];
+  const iterationPerUser = Math.round(userIds.length * p);
+  for (const currentId of userIds) {
+    let likedPostIds = new Set();
 
-  return await prisma.likes.createMany({ data: likeEntries });
+    for (let i = 0; i < iterationPerUser; i++) {
+      const postId = randomize(postIds);
+      likedPostIds.add(postId);
+    }
+
+    likedPostIds = Array.from(likedPostIds);
+    entries = [
+      ...entries,
+      ...likedPostIds.map((likedPostId) => ({
+        userId: currentId,
+        postId: likedPostId,
+      })),
+    ];
+  }
+
+  await prisma.likes.createMany({
+    data: entries,
+  });
 };
 
 const populateDb = async () => {
   try {
     await createNewUsers(10);
+    await createNewFollowers(1);
     await createNewPosts(20);
     await createNewComments(40);
-    await createNewLikes(80);
+    await createNewLikes(1);
 
-    console.log("Database has been populated");
+    // console.log("Database has been populated");
   } catch (error) {
     if (
       error.name == "PrismaClientKnownRequestError" &&

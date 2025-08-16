@@ -67,16 +67,27 @@ exports.updateCurrentUser = async (usersFields) => {
   });
 };
 
-exports.getUserPosts = async (username, start, length) => {
-  const user = await prisma.users.findMany({
+exports.getUserPosts = async (username, start, length, currentUserId) => {
+  let userPosts = await prisma.users.findUnique({
     where: {
       username,
     },
     include: {
+      followers: {
+        where: {
+          followedById: currentUserId,
+        },
+      },
+      _count: {
+        select: { followers: true, following: true },
+      },
       posts: {
         skip: start,
         take: length,
         include: {
+          likes: {
+            where: { userId: currentUserId },
+          },
           _count: {
             select: { comments: true, likes: true },
           },
@@ -89,5 +100,36 @@ exports.getUserPosts = async (username, start, length) => {
     },
   });
 
-  return user[0];
+  userPosts["posts"] = userPosts["posts"].map((entry) => {
+    const isLiked = entry["likes"].length != 0;
+    delete entry["likes"];
+    entry["liked"] = isLiked;
+
+    return entry;
+  });
+
+  userPosts["followed"] = userPosts["followers"].length != 0;
+  delete userPosts["followers"];
+
+  return userPosts;
+};
+
+exports.createUserFollow = async (followedId, currentUserId) => {
+  return await prisma.follows.create({
+    data: {
+      followingId: followedId,
+      followedById: currentUserId,
+    },
+  });
+};
+
+exports.deleteUserFollow = async (followedId, currentUserId) => {
+  return await prisma.follows.delete({
+    where: {
+      followingId_followedById: {
+        followingId: followedId,
+        followedById: currentUserId,
+      },
+    },
+  });
 };

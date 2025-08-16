@@ -14,6 +14,8 @@ router.post("/:postId/comment", isAuth, controller.postComment);
 
 router.post("/:postId/like", isAuth, controller.postLike);
 
+router.delete("/:postId/like/remove", isAuth, controller.postRemoveLike);
+
 router.delete("/:postId/delete", isAuth, controller.postDelete);
 
 module.exports = router;

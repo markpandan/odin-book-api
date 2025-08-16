@@ -76,12 +76,43 @@ exports.userUpdate = [
   },
 ];
 
+exports.userFollow = async (req, res, next) => {
+  const { id: currentUserId } = req.user;
+  const { userId: followedUserId } = req.params;
+
+  try {
+    const follow = await db.createUserFollow(followedUserId, currentUserId);
+
+    res.json({ message: "User followed successfully", output: follow });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.userRemoveFollow = async (req, res, next) => {
+  const { id: currentUserId } = req.user;
+  const { userId: followedUserId } = req.params;
+
+  try {
+    const follow = await db.deleteUserFollow(followedUserId, currentUserId);
+
+    res.json({ message: "User follow removed", output: follow });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.userGetPosts = async (req, res, next) => {
-  const { start = 0, length = 5 } = req.query;
+  const { start = 0, length = 5, relationTo = "" } = req.query;
   const { username } = req.params;
 
   try {
-    const userPosts = await db.getUserPosts(username, start, length);
+    const userPosts = await db.getUserPosts(
+      username,
+      start,
+      length,
+      relationTo
+    );
 
     res.json({ output: userPosts });
   } catch (error) {

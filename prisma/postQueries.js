@@ -1,13 +1,14 @@
 const prisma = require("./query");
 
-exports.getSomePosts = async (start, length) => {
-  return await prisma.posts.findMany({
+exports.getSomePosts = async (start, length, userId) => {
+  const posts = await prisma.posts.findMany({
     skip: start,
     take: length,
     orderBy: {
       createdAt: "desc",
     },
     include: {
+      userId: false,
       user: {
         include: {
           password: false,
@@ -16,10 +17,21 @@ exports.getSomePosts = async (start, length) => {
           updatedAt: false,
         },
       },
+      likes: {
+        where: { userId },
+      },
       _count: {
         select: { comments: true, likes: true },
       },
     },
+  });
+
+  return posts.map((entry) => {
+    const isLiked = entry["likes"].length != 0;
+    delete entry["likes"];
+    entry["liked"] = isLiked;
+
+    return entry;
   });
 };
 
@@ -66,6 +78,15 @@ exports.createPostComment = async (content, userId, postId) => {
 exports.createPostLike = async (userId, postId) => {
   return await prisma.likes.create({
     data: {
+      userId,
+      postId,
+    },
+  });
+};
+
+exports.deletePostLike = async (userId, postId) => {
+  return await prisma.likes.deleteMany({
+    where: {
       userId,
       postId,
     },

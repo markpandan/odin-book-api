@@ -10,8 +10,10 @@ router.post("/signup", controller.userSignup);
 
 router.put("/update", isAuth, controller.userUpdate);
 
-router.get("/:username/posts", controller.userGetPosts);
+router.post("/:userId/follow", isAuth, controller.userFollow);
 
-// router.get("/posts", isAuth, controller.userGetPosts);
+router.delete("/:userId/follow/remove", isAuth, controller.userRemoveFollow);
+
+router.get("/:username/posts", controller.userGetPosts);
 
 module.exports = router;
