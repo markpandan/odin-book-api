@@ -67,6 +67,7 @@ model Images {
   resource_type String
   format        String
   public_id     String
+  url           String
 
   post   Posts  @relation(fields: [postId], references: [id])
   postId String

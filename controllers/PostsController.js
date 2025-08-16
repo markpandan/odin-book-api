@@ -39,22 +39,32 @@ exports.postCreate = [
     const { content } = req.body;
 
     try {
-      // if (req.file) {
-      //   const { path, destination } = req.file;
-      //   const resizedImage = await sharp(path)
-      //     .resize(500, 500, {
-      //       fit: "inside",
-      //       withoutEnlargement: true,
-      //     })
-      //     .toBuffer();
+      let post;
+      if (!req.file) {
+        post = await db.createPost(userId, content);
+      } else {
+        const { path, destination, filename, size } = req.file;
+        const { imageWidthPx = 800, imageHeightPx = 400 } = req.query;
 
-      //   fs.writeFileSync(path, resizedImage);
-      //   const uploadedFile = await uploadToCloud(path, destination);
-      //   console.log(uploadedFile);
-      // }
-      // res.json({ message: "Test run" });
+        const resizedImage = await sharp(path)
+          .resize(imageWidthPx, imageHeightPx, {
+            fit: "inside",
+            withoutEnlargement: true,
+          })
+          .toBuffer();
 
-      const post = await db.createPost(userId, content);
+        fs.writeFileSync(path, resizedImage);
+        const uploadedFile = await uploadToCloud(path, destination);
+
+        post = await db.createPost(userId, content, {
+          imageName: filename,
+          size,
+          resource_type: uploadedFile.resource_type,
+          format: uploadedFile.format,
+          public_id: uploadedFile.public_id,
+          url: uploadedFile.url,
+        });
+      }
 
       res.json({ message: "Post Created", output: post });
     } catch (error) {

@@ -88,6 +88,7 @@ exports.getUserPosts = async (username, start, length, currentUserId) => {
         skip: start,
         take: length,
         include: {
+          images: { select: { url: true } },
           likes: {
             where: { userId: currentUserId },
           },

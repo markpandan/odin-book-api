@@ -17,6 +17,7 @@ exports.getSomePosts = async (start, length, userId) => {
           updatedAt: false,
         },
       },
+      images: { select: { url: true } },
       likes: {
         where: { userId },
       },
@@ -59,10 +60,31 @@ exports.getPostComments = async (postId) => {
   return query[0].comments;
 };
 
-exports.createPost = async (userId, content) => {
-  return prisma.posts.create({
-    data: { content, userId },
-  });
+exports.createPost = async (userId, content, imageProperties) => {
+  if (!imageProperties) {
+    return prisma.posts.create({
+      data: { content, userId },
+    });
+  } else {
+    return prisma.posts.create({
+      data: {
+        content,
+        userId,
+        images: {
+          create: [
+            {
+              name: imageProperties.imageName,
+              size: imageProperties.size,
+              resource_type: imageProperties.resource_type,
+              format: imageProperties.format,
+              public_id: imageProperties.public_id,
+              url: imageProperties.url,
+            },
+          ],
+        },
+      },
+    });
+  }
 };
 
 exports.createPostComment = async (content, userId, postId) => {
