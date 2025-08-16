@@ -6,6 +6,11 @@ const {
   validateUpdatedCredentials,
 } = require("../validators/UserValidators");
 const { validationResult } = require("express-validator");
+const { singleFileUpload } = require("../config/mutler");
+const path = require("node:path");
+const { uploadToCloud, destroyFileInCloud } = require("../config/cloudinary");
+const sharp = require("sharp");
+const fs = require("node:fs");
 
 exports.userLogin = async (req, res, next) => {
   const { username, password } = req.body;
@@ -51,22 +56,46 @@ exports.userSignup = [
 
 exports.userUpdate = [
   validateUpdatedCredentials,
-  async (req, res) => {
+  singleFileUpload("profile"),
+  async (req, res, next) => {
     const errorResult = validationResult(req);
     if (!errorResult.isEmpty()) {
       return res.status(400).json({ message: errorResult.errors[0].msg });
     }
 
-    const { id: userId } = req.user;
+    const { id: userId, profile_url: old_profile_url } = req.user;
     const { username, firstname, lastname, email } = req.body;
+    const { profileWidthPx = 150, profileHeightPx = 150 } = req.query;
 
     try {
+      let new_profile_url;
+      if (req.file) {
+        const { path: filePath, destination } = req.file;
+        const resizedImage = await sharp(filePath)
+          .resize(profileWidthPx, profileHeightPx, {
+            fit: "inside",
+            withoutEnlargement: true,
+          })
+          .toBuffer();
+
+        fs.writeFileSync(filePath, resizedImage);
+        const uploadedFile = await uploadToCloud(filePath, destination);
+
+        if (old_profile_url) {
+          const public_id = path.parse(old_profile_url.split("/").pop()).name;
+          destroyFileInCloud(public_id, "image");
+        }
+
+        new_profile_url = uploadedFile.url;
+      }
+
       const updatedUser = await db.updateCurrentUser({
         id: userId,
         username,
         firstname,
         lastname,
         email,
+        profile_url: new_profile_url,
       });
       const token = issueToken(updatedUser);
       res.json({ message: "User account updated", output: { token } });

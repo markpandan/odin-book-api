@@ -1,4 +1,8 @@
 const db = require("../prisma/postQueries");
+const { singleFileUpload } = require("../config/mutler");
+const sharp = require("sharp");
+const fs = require("node:fs");
+const { uploadToCloud } = require("../config/cloudinary");
 
 exports.postGet = async (req, res, next) => {
   const { start = 0, length = 5, relationTo = "" } = req.query;
@@ -28,18 +32,36 @@ exports.postGetComments = async (req, res, next) => {
   }
 };
 
-exports.postCreate = async (req, res, next) => {
-  const { id: userId } = req.user;
-  const { content } = req.body;
+exports.postCreate = [
+  singleFileUpload("image"),
+  async (req, res, next) => {
+    const { id: userId } = req.user;
+    const { content } = req.body;
 
-  try {
-    const post = await db.createPost(userId, content);
+    try {
+      // if (req.file) {
+      //   const { path, destination } = req.file;
+      //   const resizedImage = await sharp(path)
+      //     .resize(500, 500, {
+      //       fit: "inside",
+      //       withoutEnlargement: true,
+      //     })
+      //     .toBuffer();
 
-    res.json({ message: "Post Created", output: post });
-  } catch (error) {
-    next(error);
-  }
-};
+      //   fs.writeFileSync(path, resizedImage);
+      //   const uploadedFile = await uploadToCloud(path, destination);
+      //   console.log(uploadedFile);
+      // }
+      // res.json({ message: "Test run" });
+
+      const post = await db.createPost(userId, content);
+
+      res.json({ message: "Post Created", output: post });
+    } catch (error) {
+      next(error);
+    }
+  },
+];
 
 exports.postComment = async (req, res, next) => {
   const { id: userId } = req.user;

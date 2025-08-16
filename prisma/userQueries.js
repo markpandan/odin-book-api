@@ -27,6 +27,7 @@ exports.getUserByUsername = async (username) => {
       email: true,
       firstname: true,
       lastname: true,
+      profile_url: true,
       password: true,
     },
   });
@@ -45,7 +46,7 @@ exports.getUserByEmail = async (email) => {
 };
 
 exports.updateCurrentUser = async (usersFields) => {
-  const { id, username, firstname, lastname, email } = usersFields;
+  const { id, username, firstname, lastname, email, profile_url } = usersFields;
 
   return await prisma.users.update({
     where: {
@@ -56,6 +57,7 @@ exports.updateCurrentUser = async (usersFields) => {
       firstname,
       lastname,
       email,
+      profile_url,
     },
     select: {
       id: true,
@@ -63,6 +65,7 @@ exports.updateCurrentUser = async (usersFields) => {
       email: true,
       firstname: true,
       lastname: true,
+      profile_url: true,
     },
   });
 };

@@ -14,12 +14,13 @@ datasource db {
 }
 
 model Users {
-  id        String @id @default(uuid())
-  username  String @unique
-  firstname String
-  lastname  String
-  email     String @unique
-  password  String
+  id          String  @id @default(uuid())
+  username    String  @unique
+  firstname   String
+  lastname    String
+  email       String  @unique
+  profile_url String?
+  password    String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
