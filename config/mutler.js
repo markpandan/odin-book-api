@@ -1,6 +1,7 @@
 const multer = require("multer");
 const mime = require("mime-types");
 const fs = require("fs");
+const crypto = require("crypto");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
