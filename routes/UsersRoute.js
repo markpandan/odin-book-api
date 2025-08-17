@@ -4,6 +4,8 @@ const { isAuth } = require("../lib/authUtils");
 
 const controller = require("../controllers/UsersController");
 
+router.get("/leaderboards", controller.userLeaderboards);
+
 router.post("/login", controller.userLogin);
 
 router.post("/signup", controller.userSignup);

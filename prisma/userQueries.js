@@ -137,3 +137,23 @@ exports.deleteUserFollow = async (followedId, currentUserId) => {
     },
   });
 };
+
+exports.getTopUsers = async () => {
+  return await prisma.users.findMany({
+    take: 3,
+    orderBy: {
+      followers: {
+        _count: "desc",
+      },
+    },
+    include: {
+      email: false,
+      password: false,
+      createdAt: false,
+      updatedAt: false,
+      _count: {
+        select: { followers: true },
+      },
+    },
+  });
+};

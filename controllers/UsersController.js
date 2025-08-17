@@ -148,3 +148,13 @@ exports.userGetPosts = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.userLeaderboards = async (req, res, next) => {
+  try {
+    const leaderboards = await db.getTopUsers();
+
+    res.json({ output: leaderboards });
+  } catch (error) {
+    next(error);
+  }
+};
