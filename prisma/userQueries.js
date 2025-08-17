@@ -16,6 +16,35 @@ exports.createNewUser = async (usersFields) => {
   });
 };
 
+exports.getUserProfile = async (username, currentUserId) => {
+  const user = await prisma.users.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+      username: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      profile_url: true,
+      _count: {
+        select: { followers: true, posts: true, following: true },
+      },
+      followers: {
+        where: {
+          followedById: currentUserId || "",
+        },
+      },
+    },
+  });
+
+  user["followed"] = user["followers"].length != 0;
+  delete user["followers"];
+
+  return user;
+};
+
 exports.getUserByUsername = async (username) => {
   const user = await prisma.users.findUnique({
     where: {

@@ -5,10 +5,11 @@ const fs = require("node:fs");
 const { uploadToCloud } = require("../config/cloudinary");
 
 exports.postGet = async (req, res, next) => {
-  const { start = 0, length = 5, relationTo = "" } = req.query;
+  const { start = 0, length = 5, userId, relationTo } = req.query;
 
   try {
     const posts = await db.getSomePosts(
+      userId,
       Number(start),
       Number(length),
       relationTo

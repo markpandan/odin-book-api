@@ -1,9 +1,12 @@
 const prisma = require("./query");
 
-exports.getSomePosts = async (start, length, userId) => {
+exports.getSomePosts = async (userId, start, length, relationUserId = "") => {
   const posts = await prisma.posts.findMany({
     skip: start,
     take: length,
+    where: {
+      userId,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -19,7 +22,7 @@ exports.getSomePosts = async (start, length, userId) => {
       },
       images: { select: { url: true } },
       likes: {
-        where: { userId },
+        where: { userId: relationUserId },
       },
       _count: {
         select: { comments: true, likes: true },

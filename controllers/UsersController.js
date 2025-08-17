@@ -131,6 +131,18 @@ exports.userRemoveFollow = async (req, res, next) => {
   }
 };
 
+exports.userGet = async (req, res, next) => {
+  const { username } = req.params;
+  const { relationTo } = req.query;
+
+  try {
+    const user = await db.getUserProfile(username, relationTo);
+    res.json({ output: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.userGetPosts = async (req, res, next) => {
   const { start = 0, length = 5, relationTo = "" } = req.query;
   const { username } = req.params;
@@ -138,8 +150,8 @@ exports.userGetPosts = async (req, res, next) => {
   try {
     const userPosts = await db.getUserPosts(
       username,
-      start,
-      length,
+      Number(start),
+      Number(length),
       relationTo
     );
 

@@ -16,6 +16,8 @@ router.post("/:userId/follow", isAuth, controller.userFollow);
 
 router.delete("/:userId/follow/remove", isAuth, controller.userRemoveFollow);
 
+router.get("/:username", controller.userGet);
+
 router.get("/:username/posts", controller.userGetPosts);
 
 module.exports = router;

@@ -69,7 +69,7 @@ model Images {
   public_id     String
   url           String
 
-  post   Posts  @relation(fields: [postId], references: [id])
+  post   Posts  @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
 
   createdAt DateTime @default(now())
