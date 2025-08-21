@@ -1,10 +1,10 @@
 const express = require("express");
 const { createServer } = require("node:http");
-const { Server } = require("socket.io");
 const cors = require("cors");
 const { availableParallelism } = require("node:os");
 const cluster = require("node:cluster");
-const { createAdapter, setupPrimary } = require("@socket.io/cluster-adapter");
+const { setupPrimary } = require("@socket.io/cluster-adapter");
+const { socketServer, socketConnections } = require("./config/socket");
 
 require("dotenv").config();
 
@@ -21,13 +21,7 @@ if (cluster.isPrimary) {
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {
-  connectionStateRecovery: {},
-  adapter: createAdapter(),
-  cors: {
-    origin: process.env.ALLOWED_URL,
-  },
-});
+socketServer(server);
 
 app.use(cors());
 
@@ -53,12 +47,7 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).json({ message: err.message });
 });
 
-io.on("connection", (socket) => {
-  socket.on("chat message", (msg, callback) => {
-    io.emit("chat message", msg);
-    callback();
-  });
-});
+socketConnections();
 
 const port = process.env.PORT;
 server.listen(port, () => {

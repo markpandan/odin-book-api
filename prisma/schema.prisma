@@ -25,12 +25,13 @@ model Users {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  posts    Posts[]
-  comments Comments[]
-  likes    Likes[]
-
-  following Follows[] @relation("followedBy")
-  followers Follows[] @relation("following")
+  following Follows[]  @relation("followedBy")
+  followers Follows[]  @relation("following")
+  posts     Posts[]
+  chats     Chats[]
+  messages  Messages[]
+  comments  Comments[]
+  likes     Likes[]
 }
 
 model Follows {
@@ -58,6 +59,30 @@ model Posts {
   images   Images[]
   comments Comments[]
   likes    Likes[]
+}
+
+model Chats {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users    Users[]
+  messages Messages[]
+}
+
+model Messages {
+  id      String @id @default(uuid())
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chat   Chats  @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId String
+
+  sender   Users  @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  senderId String
 }
 
 model Images {
