@@ -10,6 +10,7 @@ The API was made to secure messages, and uploaded images, while verifying the va
 
 - [multer](https://expressjs.com/en/resources/middleware/multer.html) middleware was utilized to receive the files from the requested resource. They are being stored on the `/tmp/` folder first before being sent to the [Cloudinary](https://cloudinary.com/) server.
 - [Passport.js](https://www.passportjs.org/) was used to verify JWT tokens from the Authorization header of the request, and permit access to several key datas.
+- This app features real-time messaging by utilizing the widely known library called [Socket.io](https://socket.io/)
 
 ## Installation
 
@@ -27,6 +28,7 @@ The following environmental variables are required to make the app running. They
 - `CLOUDINARY_URL` - provided by Cloudinary to make an access to the cloud storage of the created account
 - `CLOUDINARY_DATABASE_FOLDER` - _optional_: the folder from the cloud storage which the files are securely stored.
 - `JWT_SECRET_KEY` - used to verify any incoming tokens
+- `ALLOWED_URL` - url of the frontend to be allowed on fetching data on the socket
 
 > **NOTE:** _The optional variables are still required to be placed on file. Just leave an empty string to avoid any potential compilation errors._
 
