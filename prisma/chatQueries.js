@@ -49,12 +49,11 @@ exports.getUserChatList = async (userId, start, length) => {
       chats: {
         include: {
           users: {
-            select: {
-              id: true,
-              username: true,
-              firstname: true,
-              lastname: true,
-              email: true,
+            include: {
+              password: false,
+              email: false,
+              createdAt: false,
+              updatedAt: false,
             },
             where: {
               NOT: {

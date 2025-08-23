@@ -71,7 +71,12 @@ exports.postChatMessage = async (req, res, next) => {
 
   try {
     const newMessage = await db.postNewMessage(chatId, senderId, message);
-    io.to(newMessage.chatId).emit("chat message", newMessage.content);
+
+    io.timeout(5000)
+      .to(newMessage.chatId)
+      .emit("chat message", newMessage.content, senderId, (err) => {
+        if (err) console.error(`Client on chat ID ${chatId} is unresponsive`);
+      });
     res.json({ message: "Message Submitted", output: newMessage });
   } catch (error) {
     next(error);

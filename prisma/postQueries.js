@@ -7,9 +7,16 @@ exports.getSomePosts = async (userId, start, length, relationUserId = "") => {
     where: {
       userId,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      {
+        createdAt: "desc",
+      },
+      {
+        likes: {
+          _count: "desc",
+        },
+      },
+    ],
     include: {
       userId: false,
       user: {
