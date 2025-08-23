@@ -21,7 +21,7 @@ if (cluster.isPrimary) {
 
 const app = express();
 const server = createServer(app);
-socketServer(server);
+const io = socketServer(server);
 
 app.use(cors());
 
@@ -41,6 +41,16 @@ app.use("/comments", commentsRoute);
 
 const likesRoute = require("./routes/LikesRoute");
 app.use("/likes", likesRoute);
+
+const chatsRoute = require("./routes/ChatsRoute");
+app.use(
+  "/chats",
+  (req, res, next) => {
+    req.io = io;
+    next();
+  },
+  chatsRoute
+);
 
 app.use((err, req, res, next) => {
   console.error(err);

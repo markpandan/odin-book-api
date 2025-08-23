@@ -1,7 +1,7 @@
 const { createAdapter } = require("@socket.io/cluster-adapter");
 const { Server } = require("socket.io");
 
-exports.io;
+let io;
 
 exports.socketServer = (server) => {
   io = new Server(server, {
@@ -11,19 +11,21 @@ exports.socketServer = (server) => {
       origin: process.env.ALLOWED_URL,
     },
   });
+
+  return io;
 };
 
 exports.socketConnections = () =>
   io.on("connection", (socket) => {
-    console.log("A User Connected");
+    console.log("A User Connected: ", String(new Date(Date.now())));
 
-    socket.on("join chat", async (chatId) => {
-      await socket.join(chatId);
+    socket.on("switch room", async (fromChatId, toChatId, callback) => {
+      if (fromChatId) await socket.leave(fromChatId);
+      await socket.join(toChatId);
+      callback();
     });
 
-    socket.on("leave chat", async (chatId) => {
-      await socket.leave(chatId);
+    socket.on("disconnect", () => {
+      console.log("A User Disconnected: ", String(new Date(Date.now())));
     });
-
-    socket.on("disconnect", () => console.log("A User Disconnected"));
   });
